@@ -661,13 +661,15 @@
                 var blob = pdf.output('blob');
                 var filename = generateFilename(data);
 
-                // Download locally
-                downloadBlob(blob, filename);
-                showToast('PDF descargado ✓', 'success');
-
-                // Send to Telegram
+                // Send to Telegram first (before download, to avoid mobile interruption)
                 showToast('Enviando a Telegram...', 'info');
                 sendBlobToTelegram(blob, filename, data);
+
+                // Download locally — slight delay so fetch is already in flight
+                setTimeout(function () {
+                    downloadBlob(blob, filename);
+                    showToast('PDF descargado ✓', 'success');
+                }, 200);
             })
             .catch(function (err) {
                 console.error('html2canvas error:', err);
