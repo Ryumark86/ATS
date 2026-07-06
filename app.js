@@ -291,7 +291,7 @@
     function isCanvasBlank(canvasId) {
         var canvas = document.getElementById(canvasId);
         if (!canvas) return true;
-        var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d', { willReadFrequently: true });
         var pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         for (var i = 3; i < pixelData.length; i += 4) {
             if (pixelData[i] !== 0) return false;
@@ -594,28 +594,18 @@
         $('screen-preview').style.display = 'none';
     }
 
-    // ===== PRINT =====
-    function printPDF() {
-        window.print();
-    }
-
-    // ===== TELEGRAM SEND =====
-    function sendToTelegram() {
-        var btn = $('btnSendTelegram');
-        btn.disabled = true;
-        btn.textContent = '⌛ Procesando...';
+    // ===== CAPTURE, DOWNLOAD & SEND =====
+    function captureAndSend(data) {
+        showToast('Generando PDF...', 'info');
 
         var el = $('reportContent');
 
         html2canvas(el, { scale: 2, useCORS: true, logging: false, allowTaint: true })
             .then(function (canvas) {
-                btn.textContent = '⌛ Generando PDF...';
                 var imgData = canvas.toDataURL('image/png');
                 var { jsPDF } = window.jspdf;
                 if (!jsPDF) {
                     showToast('Error: jsPDF no está disponible', 'error');
-                    btn.disabled = false;
-                    btn.textContent = '📤 Enviar a Telegram';
                     return;
                 }
                 var pdf = new jsPDF('p', 'pt', 'a4');
@@ -640,21 +630,34 @@
                 }
 
                 var blob = pdf.output('blob');
-                var data = gatherData();
                 var filename = generateFilename(data);
-                sendBlobToTelegram(blob, filename, btn);
+
+                // Download locally
+                downloadBlob(blob, filename);
+                showToast('PDF descargado ✓', 'success');
+
+                // Send to Telegram
+                showToast('Enviando a Telegram...', 'info');
+                sendBlobToTelegram(blob, filename, data);
             })
             .catch(function (err) {
                 console.error('html2canvas error:', err);
-                showToast('Error al capturar la vista previa: ' + err.message, 'error');
-                btn.disabled = false;
-                btn.textContent = '📤 Enviar a Telegram';
+                showToast('Error al generar el PDF: ' + err.message, 'error');
             });
     }
 
-    function sendBlobToTelegram(blob, filename, btn) {
-        btn.textContent = '⌛ Enviando a Telegram...';
+    function downloadBlob(blob, filename) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
 
+    function sendBlobToTelegram(blob, filename, data) {
         var fd = new FormData();
         fd.append('chat_id', CONFIG.TELEGRAM_CHAT_ID);
         fd.append('document', blob, filename);
@@ -672,13 +675,8 @@
             })
             .catch(function (err) {
                 console.error('Telegram error:', err);
-                showToast('Error al enviar. Se guardó para reintentar.', 'warning');
-                var data = gatherData();
+                showToast('Error de conexión. Se guardó para reintentar.', 'warning');
                 savePending(data);
-            })
-            .finally(function () {
-                btn.disabled = false;
-                btn.textContent = '📤 Enviar a Telegram';
             });
     }
 
@@ -901,30 +899,19 @@
 
     // ===== BIND EVENTS =====
     function bindEvents() {
-        // Form submit
+        // Form submit — unified flow: preview + download + Telegram
         $('atsForm').addEventListener('submit', function (e) {
             e.preventDefault();
             var data = gatherData();
             if (!validate(data)) return;
+            saveToHistory(data);
             var html = buildReportHTML(data);
             showPreview(html);
-            saveToHistory(data);
-            showToast('ATS generado correctamente', 'success');
+            captureAndSend(data);
         });
 
         // Back to form
         $('btnBackForm').addEventListener('click', showForm);
-
-        // Print
-        $('btnPrintPDF').addEventListener('click', printPDF);
-
-        // After print, show form again (optional)
-        window.addEventListener('afterprint', function () {
-            // Keep preview visible so user can still send to Telegram
-        });
-
-        // Telegram
-        $('btnSendTelegram').addEventListener('click', sendToTelegram);
 
         // Agregar trabajador
         $('btnAgregarTrabajador').addEventListener('click', function () {
@@ -947,11 +934,12 @@
         $('btnRetryPending').addEventListener('click', retryPending);
         $('btnViewPending').addEventListener('click', viewPending);
 
-        // Online/offline events for pending queue
+        // Auto-retry pending when back online
         window.addEventListener('online', function () {
             var pending = JSON.parse(localStorage.getItem(CONFIG.PENDING_KEY) || '[]');
             if (pending.length > 0) {
-                showToast('Conexión restablecida. ' + pending.length + ' envío' + (pending.length > 1 ? 's' : '') + ' pendiente' + (pending.length > 1 ? 's' : ''), 'info');
+                showToast('Conexión restablecida. Reintentando envíos pendientes...', 'info');
+                retryPending();
             }
         });
     }

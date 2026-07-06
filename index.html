@@ -136,7 +136,7 @@
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit">Previsualizar ATS</button>
+            <button type="submit" id="btnSubmit">Generar y Enviar ATS</button>
 
             <div class="history-bar" id="historyBar">
                 <span id="historyCount">0 ATS registrados</span>
@@ -159,10 +159,7 @@
     <div id="screen-preview" class="screen-preview" style="display:none">
         <div class="preview-header">
             <button type="button" class="btn-back" id="btnBackForm">← Volver al Formulario</button>
-            <div class="preview-actions">
-                <button type="button" class="btn-print" id="btnPrintPDF">🖨️ Imprimir PDF</button>
-                <button type="button" class="btn-telegram" id="btnSendTelegram">📤 Enviar a Telegram</button>
-            </div>
+            <span class="preview-status" id="previewStatus"></span>
         </div>
         <div id="reportContent"></div>
     </div>

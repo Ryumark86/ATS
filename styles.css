@@ -404,25 +404,9 @@ header {
     gap: 8px;
 }
 
-.btn-print, .btn-telegram {
-    padding: 8px 20px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.9em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    white-space: nowrap;
-}
-
-.btn-print { background: var(--color-primary); color: white; }
-.btn-telegram { background: #0088cc; color: white; }
-
-.btn-print:hover, .btn-telegram:hover { opacity: 0.85; }
-
-.btn-telegram:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.preview-status {
+    font-size: 0.85em;
+    color: var(--color-text-light);
 }
 
 #reportContent {
