@@ -3,7 +3,7 @@
 
     var CONFIG = {
         TELEGRAM_TOKEN: '8619707683:AAFXMNsULLJuOvAmwEZm1iuLgshotv4MPRs',
-        TELEGRAM_CHAT_ID: '-5117938351',
+        TELEGRAM_CHAT_ID: '-1004421342466',
         HISTORY_KEY: 'ats_history',
         PENDING_KEY: 'ats_pending'
     };
@@ -988,23 +988,34 @@
         fetch(botUrl + '/getMe')
             .then(function (r) { return r.json(); })
             .then(function (resp) {
-                console.log('Bot response:', JSON.stringify(resp));
+                console.log('Bot:', JSON.stringify(resp));
                 if (!resp.ok) { alert('Bot error: ' + resp.description); return; }
-                alert('Bot OK: @' + resp.result.username);
-                return fetch(botUrl + '/getChat?chat_id=' + CONFIG.TELEGRAM_CHAT_ID)
+                var botName = resp.result.username;
+                alert('Bot OK: @' + botName + '\n\n1. Abrí Telegram\n2. Agregá @' + botName + ' al grupo\n3. Enviá un mensaje en el grupo\n4. Hacé clic en OK aquí');
+                return fetch(botUrl + '/getUpdates')
                     .then(function (r) { return r.json(); });
             })
             .then(function (resp) {
                 if (!resp) return;
-                console.log('Chat response:', JSON.stringify(resp));
-                if (resp.ok) {
-                    alert('Chat OK: ' + (resp.result.title || resp.result.first_name || 'ID: ' + resp.result.id));
-                } else {
-                    alert('Chat error: ' + resp.description + '\n\n¿El bot está agregado al grupo?');
+                console.log('Updates:', JSON.stringify(resp));
+                var chats = {};
+                (resp.result || []).forEach(function (u) {
+                    var chat = u.message && u.message.chat;
+                    if (chat) chats[chat.id] = chat.title || chat.first_name || chat.id;
+                });
+                var keys = Object.keys(chats);
+                if (keys.length === 0) {
+                    alert('No se encontraron chats. Enviá un mensaje en el grupo y volvé a intentar.');
+                    return;
                 }
+                var msg = 'Chats encontrados:\n';
+                keys.forEach(function (id) { msg += id + ' → ' + chats[id] + '\n'; });
+                msg += '\nEl ID correcto es el del grupo (negativo, ej: -5123456789)';
+                alert(msg);
+                console.log('Chats detectados:', chats);
             })
             .catch(function (err) {
-                console.error('Network error:', err);
+                console.error('Error:', err);
                 alert('Error de red: ' + err.message);
             });
     };
