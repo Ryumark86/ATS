@@ -40,7 +40,7 @@ header {
 }
 
 .logo {
-    max-width: 120px;
+    max-width: 180px;
     height: auto;
     margin-bottom: 8px;
 }
@@ -435,7 +435,7 @@ header {
 }
 
 .report-header img {
-    max-width: 100px;
+    max-width: 150px;
     height: auto;
     margin-bottom: 4pt;
 }
