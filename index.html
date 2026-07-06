@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ATS - SITOC</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="logo-sitoc.png" alt="SITOC" class="logo">
+            <p class="subtitle">Análisis de Trabajo Seguro (ATS)</p>
+            <p class="form-code">FR-SST-002 | Versión: 002</p>
+        </header>
+
+        <form id="atsForm">
+            <div class="section">
+                <h2 class="section-title">Información General</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="codigoSitio">Código del Sitio</label>
+                        <input type="text" id="codigoSitio" placeholder="Ej: MW25-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreEncargado">Nombre del Encargado</label>
+                        <input type="text" id="nombreEncargado" placeholder="Nombre completo" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fecha">Fecha de Realización</label>
+                        <input type="date" id="fecha" readonly tabindex="-1">
+                    </div>
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad</label>
+                        <input type="text" id="ciudad" placeholder="Ciudad">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sitio">Sitio / Estación</label>
+                    <input type="text" id="sitio" placeholder="Ej: Estación Central, Cerro..." required>
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Trabajo</label>
+                    <textarea id="descripcion" rows="3" placeholder="Describa el trabajo a realizar..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="equipos">Equipos y Herramientas Requeridas</label>
+                    <textarea id="equipos" rows="3" placeholder="Liste los equipos y herramientas necesarias..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Verificación de Seguridad</h2>
+                <div class="check-item">
+                    <label>Extintor vigente disponible</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="extintor" value="SI" checked> SI</label>
+                        <label class="radio-label"><input type="radio" name="extintor" value="NO"> NO</label>
+                        <label class="radio-label"><input type="radio" name="extintor" value="N/A"> N/A</label>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <label>Camilla en buen estado disponible</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="camilla" value="SI" checked> SI</label>
+                        <label class="radio-label"><input type="radio" name="camilla" value="NO"> NO</label>
+                        <label class="radio-label"><input type="radio" name="camilla" value="N/A"> N/A</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRIMER BLOQUE -->
+            <div class="section">
+                <h2 class="section-title">1. Pasos de la Tarea</h2>
+                <p class="section-desc">Seleccione SI si el paso aplica o N/A si no aplica.</p>
+                <div id="pasosContainer"></div>
+            </div>
+
+            <!-- SEGUNDO BLOQUE -->
+            <div class="section">
+                <h2 class="section-title">2. Controles Propuestos</h2>
+                <p class="section-desc">Seleccione SI o NO para cada control propuesto según corresponda.</p>
+                <div id="controlesContainer"></div>
+                <div class="firma-block" id="firmaResponsableBlock">
+                    <h3>Firma del Responsable (Líder de Cuadrila / Elaboró el ATS)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="responsableNombre" placeholder="Nombre completo">
+                        </div>
+                        <div class="form-group">
+                            <label>Cédula</label>
+                            <input type="text" id="responsableCedula" placeholder="Ej: 8-123-4567">
+                        </div>
+                    </div>
+                    <div class="firma-canvas-wrapper">
+                        <label>Firma</label>
+                        <canvas class="firma-canvas" id="responsableFirma" width="400" height="120"></canvas>
+                        <button type="button" class="btn-small btn-clear-firma" data-canvas="responsableFirma">Limpiar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TERCER BLOQUE -->
+            <div class="section">
+                <h2 class="section-title">3. Condiciones Inseguras</h2>
+                <p class="section-desc">¿Se observa alguna condición insegura que impide la realización de la tarea?</p>
+                <div class="checklist-condiciones" id="condicionesContainer">
+                    <label class="checkbox-label"><input type="checkbox" name="condicion" value="NINGUNA"> Ninguna</label>
+                    <label class="checkbox-label"><input type="checkbox" name="condicion" value="ESTRUCTURAS"> Estructuras (torre, azotea, mástil, etc.) inestable o en mal estado</label>
+                    <label class="checkbox-label"><input type="checkbox" name="condicion" value="FENOMENO"> Fenómeno natural (lluvia, niebla, inundación, exposición solar, incendio forestal, etc.)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="condicion" value="SALUD"> Mal estado de salud de algún trabajador</label>
+                    <label class="checkbox-label"><input type="checkbox" name="condicion" value="ORDEN_PUBLICO"> Situación de orden público</label>
+                    <div class="form-group" id="otraCondicionGroup" style="display:none">
+                        <label for="otraCondicion">Otra:</label>
+                        <input type="text" id="otraCondicion" placeholder="Describa la condición...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Personal Participante</h2>
+                <p class="section-desc">Declaro haber leído y comprendido los peligros, los riesgos y especialmente las medidas de control que se implementarán antes y durante el trabajo que vamos a realizar, para garantizar un trabajo Seguro.</p>
+                <div id="trabajadoresContainer"></div>
+                <button type="button" id="btnAgregarTrabajador" class="btn-secondary">+ Agregar Trabajador</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Revisión y Aprobación</h2>
+                <div class="form-group">
+                    <label>Revisado por</label>
+                    <input type="text" id="revisadoPor" value="RH Gestion Empresarial" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Aprobado por</label>
+                    <input type="text" id="aprobadoPor" value="Neyder Segrera" readonly>
+                </div>
+            </div>
+
+            <button type="submit" id="btnSubmit">Generar ATS</button>
+
+            <div class="history-bar" id="historyBar">
+                <span id="historyCount">0 ATS registrados</span>
+                <button type="button" id="btnDownloadHistory" class="btn-history">📥 Descargar Historial (.txt)</button>
+                <button type="button" id="btnClearHistory" class="btn-history-danger">🗑️ Limpiar Historial</button>
+            </div>
+
+            <div class="pending-bar hidden" id="pendingBar">
+                <span class="pending-icon">📤</span>
+                <span id="pendingCount">0 envíos pendientes</span>
+                <button type="button" id="btnRetryPending" class="btn-pending">Reintentar ahora</button>
+                <button type="button" id="btnViewPending" class="btn-pending-secondary">Ver</button>
+            </div>
+            <div class="pending-list hidden" id="pendingList"></div>
+
+            <div id="toast" class="toast hidden"></div>
+        </form>
+    </div>
+
+    <div id="reportContent" class="off-screen"></div>
+
+    <script src="html2pdf.bundle.min.js"></script>
+    <script>if(typeof html2pdf==='undefined'){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>')}</script>
+    <script src="app.js"></script>
+</body>
+</html>
