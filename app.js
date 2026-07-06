@@ -979,4 +979,24 @@
         });
     }
 
+    // Expose test helper to console
+    window.testTelegram = function () {
+        console.log('Probando conexión a Telegram API...');
+        var url = 'https://api.telegram.org/bot' + CONFIG.TELEGRAM_TOKEN + '/getMe';
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (resp) {
+                console.log('Respuesta getMe:', resp);
+                if (resp.ok) {
+                    alert('Bot OK: @' + resp.result.username);
+                } else {
+                    alert('Error: ' + resp.description);
+                }
+            })
+            .catch(function (err) {
+                console.error('Error de red:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+    };
+
 })();
