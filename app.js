@@ -629,9 +629,9 @@
 
         showToast('Generando PDF...', 'info');
 
-        var el = $('reportContent');
+        var el = $('reportContent').querySelector('.report-page') || $('reportContent');
 
-        html2canvas(el, { scale: 2, useCORS: true, logging: false, allowTaint: true })
+        html2canvas(el, { scale: 1, useCORS: true, logging: false, allowTaint: true })
             .then(function (canvas) {
                 var imgData = canvas.toDataURL('image/png');
                 var { jsPDF } = window.jspdf;
@@ -792,7 +792,9 @@
             tempDiv.style.cssText = 'position:fixed;top:0;left:0;width:800px;height:auto;opacity:0.01;pointer-events:none;z-index:-1;background:white;';
             document.body.appendChild(tempDiv);
 
-            html2canvas(tempDiv.firstChild, { scale: 2, useCORS: true, logging: false, allowTaint: true })
+            var captureEl = tempDiv.querySelector('.report-page') || tempDiv.firstChild;
+
+            html2canvas(captureEl, { scale: 1, useCORS: true, logging: false, allowTaint: true })
                 .then(function (canvas) {
                     var imgData = canvas.toDataURL('image/png');
                     var { jsPDF } = window.jspdf;
