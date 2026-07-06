@@ -661,6 +661,8 @@
                 var blob = pdf.output('blob');
                 var filename = generateFilename(data);
 
+                console.log('PDF generado:', filename, 'tamaño:', blob.size, 'bytes');
+
                 // Send to Telegram first (before download, to avoid mobile interruption)
                 showToast('Enviando a Telegram...', 'info');
                 sendBlobToTelegram(blob, filename, data);
@@ -702,8 +704,8 @@
                     if (r.ok && resp.ok) {
                         showToast('PDF enviado a Telegram ✓', 'success');
                     } else {
-                        console.error('Telegram API error:', resp);
-                        showToast('Telegram: ' + (resp.description || 'Error desconocido'), 'error');
+                        console.error('Telegram API error:', JSON.stringify(resp));
+                        showToast('Error Telegram: ' + (resp.description || 'Error ' + r.status), 'error');
                         savePending(data);
                     }
                 });
@@ -981,21 +983,29 @@
 
     // Expose test helper to console
     window.testTelegram = function () {
-        console.log('Probando conexión a Telegram API...');
-        var url = 'https://api.telegram.org/bot' + CONFIG.TELEGRAM_TOKEN + '/getMe';
-        fetch(url)
+        console.log('=== Test Telegram ===');
+        var botUrl = 'https://api.telegram.org/bot' + CONFIG.TELEGRAM_TOKEN;
+        fetch(botUrl + '/getMe')
             .then(function (r) { return r.json(); })
             .then(function (resp) {
-                console.log('Respuesta getMe:', resp);
+                console.log('Bot response:', JSON.stringify(resp));
+                if (!resp.ok) { alert('Bot error: ' + resp.description); return; }
+                alert('Bot OK: @' + resp.result.username);
+                return fetch(botUrl + '/getChat?chat_id=' + CONFIG.TELEGRAM_CHAT_ID)
+                    .then(function (r) { return r.json(); });
+            })
+            .then(function (resp) {
+                if (!resp) return;
+                console.log('Chat response:', JSON.stringify(resp));
                 if (resp.ok) {
-                    alert('Bot OK: @' + resp.result.username);
+                    alert('Chat OK: ' + (resp.result.title || resp.result.first_name || 'ID: ' + resp.result.id));
                 } else {
-                    alert('Error: ' + resp.description);
+                    alert('Chat error: ' + resp.description + '\n\n¿El bot está agregado al grupo?');
                 }
             })
             .catch(function (err) {
-                console.error('Error de red:', err);
-                alert('Error de conexión: ' + err.message);
+                console.error('Network error:', err);
+                alert('Error de red: ' + err.message);
             });
     };
 
