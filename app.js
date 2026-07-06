@@ -642,21 +642,19 @@
                 var pdf = new jsPDF('p', 'pt', 'a4');
                 var pageWidth = pdf.internal.pageSize.getWidth();
                 var pageHeight = pdf.internal.pageSize.getHeight();
-                var margin = 20;
-                var usableWidth = pageWidth - margin * 2;
-                var imgWidth = usableWidth;
+                var imgWidth = pageWidth;
                 var imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 var heightLeft = imgHeight;
                 var position = 0;
 
-                pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
 
                 while (heightLeft > 0) {
                     position -= pageHeight;
                     pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                 }
 
@@ -801,19 +799,17 @@
                     var pdf = new jsPDF('p', 'pt', 'a4');
                     var pageWidth = pdf.internal.pageSize.getWidth();
                     var pageHeight = pdf.internal.pageSize.getHeight();
-                    var margin = 20;
-                    var usableWidth = pageWidth - margin * 2;
-                    var imgWidth = usableWidth;
+                    var imgWidth = pageWidth;
                     var imgHeight = (canvas.height * imgWidth) / canvas.width;
                     var heightLeft = imgHeight;
                     var position = 0;
 
-                    pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                     while (heightLeft > 0) {
                         position -= pageHeight;
                         pdf.addPage();
-                        pdf.addImage(imgData, 'PNG', margin, position + margin, imgWidth, imgHeight);
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                         heightLeft -= pageHeight;
                     }
 
