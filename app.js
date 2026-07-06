@@ -694,19 +694,23 @@
         fd.append('document', blob, filename);
 
         var url = 'https://api.telegram.org/bot' + CONFIG.TELEGRAM_TOKEN + '/sendDocument';
+        console.log('Enviando PDF a Telegram:', filename, 'tamaño:', blob.size, 'bytes');
 
         fetch(url, { method: 'POST', body: fd })
-            .then(function (r) { return r.json(); })
-            .then(function (resp) {
-                if (resp.ok) {
-                    showToast('PDF enviado a Telegram ✓', 'success');
-                } else {
-                    throw new Error(resp.description || 'Error al enviar');
-                }
+            .then(function (r) {
+                return r.json().then(function (resp) {
+                    if (r.ok && resp.ok) {
+                        showToast('PDF enviado a Telegram ✓', 'success');
+                    } else {
+                        console.error('Telegram API error:', resp);
+                        showToast('Telegram: ' + (resp.description || 'Error desconocido'), 'error');
+                        savePending(data);
+                    }
+                });
             })
             .catch(function (err) {
-                console.error('Telegram error:', err);
-                showToast('Error de conexión. Se guardó para reintentar.', 'warning');
+                console.error('Telegram fetch error:', err);
+                showToast('Sin conexión. Se guardó para reintentar.', 'warning');
                 savePending(data);
             });
     }
