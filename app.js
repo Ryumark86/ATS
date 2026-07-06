@@ -566,26 +566,30 @@
 
             var reportEl = reportContent;
             var prevClass = reportEl.className;
-            reportEl.classList.remove('off-screen');
-            reportEl.style.cssText = 'position:fixed;left:0;top:0;width:210mm;z-index:-9999;visibility:visible;display:block';
+
+            var clone = reportEl.cloneNode(true);
+            clone.style.cssText = 'position:fixed;left:0;top:0;width:794px;background:#fff;z-index:999999;visibility:visible;display:block';
+            document.body.appendChild(clone);
 
             var opt = {
                 margin: [3, 3, 3, 3],
                 filename: sanitizeForFilename(data.codigoSitio) + '_' + sanitizeForFilename(data.nombreEncargado) + '_' + data.fecha + '.pdf',
                 image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+                html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            html2pdf().set(opt).from(reportContent).outputPdf('blob').then(function (blob) {
-                reportEl.className = prevClass;
-                reportEl.style.cssText = '';
-                resolve({ blob: blob, filename: opt.filename });
-            }).catch(function (err) {
-                reportEl.className = prevClass;
-                reportEl.style.cssText = '';
-                reject(err);
+            requestAnimationFrame(function () {
+                html2pdf().set(opt).from(clone).outputPdf('blob').then(function (blob) {
+                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                    reportEl.className = prevClass;
+                    resolve({ blob: blob, filename: opt.filename });
+                }).catch(function (err) {
+                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                    reportEl.className = prevClass;
+                    reject(err);
+                });
             });
         });
     }
