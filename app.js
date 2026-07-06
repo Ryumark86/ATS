@@ -848,6 +848,24 @@
         processNext();
     }
 
+    function deletePending(index) {
+        var pending = JSON.parse(localStorage.getItem(CONFIG.PENDING_KEY) || '[]');
+        if (index < 0 || index >= pending.length) return;
+        pending.splice(index, 1);
+        if (pending.length === 0) {
+            localStorage.removeItem(CONFIG.PENDING_KEY);
+        } else {
+            localStorage.setItem(CONFIG.PENDING_KEY, JSON.stringify(pending));
+        }
+        loadPending();
+        // Refresh list if visible
+        var list = $('pendingList');
+        if (!list.classList.contains('hidden')) {
+            viewPending();
+        }
+        showToast('Envío eliminado', 'info');
+    }
+
     function viewPending() {
         var list = $('pendingList');
         var pending = JSON.parse(localStorage.getItem(CONFIG.PENDING_KEY) || '[]');
@@ -855,9 +873,12 @@
             var h = '';
             pending.forEach(function (item, i) {
                 var d = item.data || {};
-                h += '<div>' + (i + 1) + '. ' + escHtml(d.codigoSitio || '—') + ' | ' +
+                h += '<div class="pending-item">';
+                h += '<span>' + (i + 1) + '. ' + escHtml(d.codigoSitio || '—') + ' | ' +
                     escHtml(d.nombreEncargado || '—') + ' | ' +
-                    (d.fecha || '—') + '</div>';
+                    (d.fecha || '—') + '</span>';
+                h += '<button class="btn-delete-pending" onclick="window._deletePending(' + i + ')" title="Eliminar">✕</button>';
+                h += '</div>';
             });
             list.innerHTML = h;
             list.classList.remove('hidden');
@@ -865,6 +886,9 @@
             list.classList.add('hidden');
         }
     }
+
+    // Expose deletePending globally for onclick
+    window._deletePending = function (i) { deletePending(i); };
 
     // ===== HISTORY =====
     function saveToHistory(data) {

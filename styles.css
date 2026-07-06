@@ -635,6 +635,26 @@ header {
 
 .pending-list.hidden { display: none; }
 
+.pending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}
+.pending-item:last-child { border-bottom: none; }
+.btn-delete-pending {
+    background: none;
+    border: none;
+    color: #e53935;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 2px 6px;
+    line-height: 1;
+    border-radius: 3px;
+}
+.btn-delete-pending:hover { background: #ffe0e0; }
+
 /* ===== TOAST ===== */
 .toast {
     position: fixed;
