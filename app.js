@@ -176,7 +176,29 @@
         loadHistory();
         loadPending();
         bindEvents();
+        checkDependencies();
     });
+
+    function checkDependencies() {
+        var missing = [];
+        if (typeof html2canvas === 'undefined') missing.push('html2canvas');
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') missing.push('jsPDF');
+        if (missing.length > 0) {
+            console.warn('Librerías no cargadas:', missing.join(', '));
+            showToast('Cargando librerías necesarias...', 'info');
+            // Retry check after 3s in case fallback scripts are loading
+            setTimeout(function () {
+                var stillMissing = [];
+                if (typeof html2canvas === 'undefined') stillMissing.push('html2canvas');
+                if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') stillMissing.push('jsPDF');
+                if (stillMissing.length > 0) {
+                    showToast('Error: ' + stillMissing.join(', ') + ' no se cargaron. Verifica conexión.', 'error');
+                } else {
+                    showToast('Librerías cargadas correctamente ✓', 'success');
+                }
+            }, 3000);
+        }
+    }
 
     // ===== DATE =====
     function initDate() {
@@ -596,6 +618,15 @@
 
     // ===== CAPTURE, DOWNLOAD & SEND =====
     function captureAndSend(data) {
+        if (typeof html2canvas === 'undefined') {
+            showToast('Error: html2canvas no cargó. Verifica conexión a Internet.', 'error');
+            return;
+        }
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+            showToast('Error: jsPDF no cargó. Verifica conexión a Internet.', 'error');
+            return;
+        }
+
         showToast('Generando PDF...', 'info');
 
         var el = $('reportContent');
