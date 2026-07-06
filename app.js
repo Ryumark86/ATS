@@ -237,8 +237,8 @@
                 h += '<div class="check-item check-item-long">';
                 h += '<label>' + escHtml(item) + '</label>';
                 h += '<div class="radio-group">';
-                h += '<label class="radio-label"><input type="radio" name="ctrl_' + sub.id + '_' + i + '" value="SI"> SI</label>';
-                h += '<label class="radio-label"><input type="radio" name="ctrl_' + sub.id + '_' + i + '" value="NO" checked> NO</label>';
+                h += '<label class="radio-label"><input type="radio" name="ctrl_' + sub.id + '_' + i + '" value="SI" checked> SI</label>';
+                h += '<label class="radio-label"><input type="radio" name="ctrl_' + sub.id + '_' + i + '" value="NO"> NO</label>';
                 h += '</div></div>';
             });
         });
