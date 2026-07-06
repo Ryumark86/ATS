@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="formContainer">
         <header>
             <img src="logo-sitoc.png" alt="SITOC" class="logo">
             <p class="subtitle">Análisis de Trabajo Seguro (ATS)</p>
@@ -71,14 +71,12 @@
                 </div>
             </div>
 
-            <!-- PRIMER BLOQUE -->
             <div class="section">
                 <h2 class="section-title">1. Pasos de la Tarea</h2>
                 <p class="section-desc">Seleccione SI si el paso aplica o N/A si no aplica.</p>
                 <div id="pasosContainer"></div>
             </div>
 
-            <!-- SEGUNDO BLOQUE -->
             <div class="section">
                 <h2 class="section-title">2. Controles Propuestos</h2>
                 <p class="section-desc">Seleccione SI o NO para cada control propuesto según corresponda.</p>
@@ -97,13 +95,12 @@
                     </div>
                     <div class="firma-canvas-wrapper">
                         <label>Firma</label>
-                        <canvas class="firma-canvas" id="responsableFirma" width="400" height="120"></canvas>
+                        <canvas class="firma-canvas" id="responsableFirma"></canvas>
                         <button type="button" class="btn-small btn-clear-firma" data-canvas="responsableFirma">Limpiar</button>
                     </div>
                 </div>
             </div>
 
-            <!-- TERCER BLOQUE -->
             <div class="section">
                 <h2 class="section-title">3. Condiciones Inseguras</h2>
                 <p class="section-desc">¿Se observa alguna condición insegura que impide la realización de la tarea?</p>
@@ -113,8 +110,8 @@
                     <label class="checkbox-label"><input type="checkbox" name="condicion" value="FENOMENO"> Fenómeno natural (lluvia, niebla, inundación, exposición solar, incendio forestal, etc.)</label>
                     <label class="checkbox-label"><input type="checkbox" name="condicion" value="SALUD"> Mal estado de salud de algún trabajador</label>
                     <label class="checkbox-label"><input type="checkbox" name="condicion" value="ORDEN_PUBLICO"> Situación de orden público</label>
-                    <div class="form-group" id="otraCondicionGroup" style="display:none">
-                        <label for="otraCondicion">Otra:</label>
+                    <div class="form-group">
+                        <label for="otraCondicion">Otra condición (especifique):</label>
                         <input type="text" id="otraCondicion" placeholder="Describa la condición...">
                     </div>
                 </div>
@@ -139,7 +136,7 @@
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit">Generar ATS</button>
+            <button type="submit" id="btnSubmit">Previsualizar ATS</button>
 
             <div class="history-bar" id="historyBar">
                 <span id="historyCount">0 ATS registrados</span>
@@ -159,10 +156,21 @@
         </form>
     </div>
 
-    <div id="reportContent" class="off-screen"></div>
+    <div id="screen-preview" class="screen-preview" style="display:none">
+        <div class="preview-header">
+            <button type="button" class="btn-back" id="btnBackForm">← Volver al Formulario</button>
+            <div class="preview-actions">
+                <button type="button" class="btn-print" id="btnPrintPDF">🖨️ Imprimir PDF</button>
+                <button type="button" class="btn-telegram" id="btnSendTelegram">📤 Enviar a Telegram</button>
+            </div>
+        </div>
+        <div id="reportContent"></div>
+    </div>
 
-    <script src="html2pdf.bundle.min.js"></script>
-    <script>if(typeof html2pdf==='undefined'){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>')}</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>if(typeof html2canvas==='undefined'){document.write('<script src="html2canvas.min.js"><\/script>')}</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>if(typeof jspdf==='undefined'&&typeof window.jspdf==='undefined'){document.write('<script src="jspdf.umd.min.js"><\/script>')}</script>
     <script src="app.js"></script>
 </body>
 </html>
